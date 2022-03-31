@@ -17,6 +17,18 @@
 
 //===============================================
 
+Mandel_struct
+{
+    int x_shift = 0;
+    int y_shift = 0;
+
+    sf::Uint32* data;
+
+    double scale_factor;
+}
+
+//===============================================
+
 enum Modes
 {
 
