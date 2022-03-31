@@ -12,13 +12,45 @@
 
 //===============================================
 
-static const int INIT_X_SIZE = 768;
-static const int INIT_Y_SIZE = 512;
+static const int Init_x_size = 768;
+static const int Init_y_size = 512;
 
-static const double INIT_SCALE_FACTOR = 1.f;
+#define X_SIZE 768
+#define Y_SIZE 512
 
-static const int INIT_X_POS = 100;
-static const int INIT_Y_POS = 100;
+//static const float Mul_x = 1/128.f 
+//static const float Mul_y = 1/128.f
+static const float Mul = 1/128.f
+
+static const double Init_scale_factor = 1.f;
+
+//===============================================
+
+static const float Scale_step = 0.1f 
+
+static const int X_shift_step = 50
+static const int Y_shift_step = 50
+
+//===============================================
+
+static const int Init_x_pos = 100;
+static const int Init_y_pos = 100;
+
+//===============================================
+
+static const float Rad2    = 100.f;
+
+static const int Check_num = 256;
+
+//===============================================
+
+static const char Font_filename[] = "/home/rustam/Desktop/code/SSE/SSE-Optimizations/src/fonts/font.ttf";
+
+static const int Fps_buf_size  = 1024;
+
+static const int Fps_char_size = 32;
+
+static const sf::Color Fps_color = sf::Color::Red;
 
 //===============================================
 

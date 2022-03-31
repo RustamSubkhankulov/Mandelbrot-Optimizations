@@ -19,7 +19,7 @@ obj/logs.o: src/global_conf.h src/logs/errors_and_logs.cpp src/logs/errors_and_l
 obj/general.o: src/global_conf.h src/general/general.cpp src/general/general.h 
 	$(CC) src/general/general.cpp -c -o obj/general.o
 
-.PNONY: cleanup logfile logclean
+.PNONY: cleanup logfile logclean compile
 
 cleanup:
 	rm obj/*.o 

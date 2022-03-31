@@ -170,6 +170,8 @@ int _log_report(LOG_PARAMS, const char* mother_func) {
     if (value < 0) 
         error_report(FILE_OUTPUT_ERROR);
 
+    fflush(logs_file);
+
     return 0;
 }
 

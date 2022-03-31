@@ -684,3 +684,12 @@ Inavalid size of the array aeguement of COPY)
 
 DEF_ERR(949, INV_MANDEL_MODE,
 Inavlid mandelbrot print function mode)
+
+DEF_ERR(950, MANDEL_EVAL_ERR,
+Error occured during mandelbrot evaluations)
+
+DEF_ERR(951, INV_CLOCK_PTR,
+Invalid pointer to the sf::Clock object)
+
+DEF_ERR(952, INV_WINDOW_PTR,
+Invalid pointer to the sf::RenderWindow)
