@@ -18,18 +18,18 @@ static const int Init_y_size = 512;
 #define X_SIZE 768
 #define Y_SIZE 512
 
-//static const float Mul_x = 1/128.f 
-//static const float Mul_y = 1/128.f
-static const float Mul = 1/128.f
+static const float Mul_x = 1/128.f;
+static const float Mul_y = 1/128.f;
+//static const float Mul = 1/128.f;
 
 static const double Init_scale_factor = 1.f;
 
 //===============================================
 
-static const float Scale_step = 0.1f 
+static const float Scale_step = 50 * Mul_x; 
 
-static const int X_shift_step = 50
-static const int Y_shift_step = 50
+static const int X_shift_step = 50;
+static const int Y_shift_step = 50;
 
 //===============================================
 
@@ -38,7 +38,7 @@ static const int Init_y_pos = 100;
 
 //===============================================
 
-static const float Rad2    = 100.f;
+static const float Max_r2  = 100.f;
 
 static const int Check_num = 256;
 

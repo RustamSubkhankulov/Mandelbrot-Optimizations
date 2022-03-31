@@ -49,7 +49,7 @@ enum Modes _parse_cmndln(int argc, char* argv[] FOR_LOGS(, LOG_PARAMS));
 
 int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS));
 
-int _mandelbrot_eval(Mandel_struct mandel_struct FOR_LOGS(, LOG_PARAMS));
+int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS));
 
 int _mandelbrot_show(FOR_LOGS(LOG_PARAMS));
 

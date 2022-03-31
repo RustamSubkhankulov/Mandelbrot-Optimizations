@@ -2,6 +2,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <stdlib.h>
+#include <immitrin.h>
 
 #include "mandelbrot.h"
 
@@ -21,8 +22,6 @@ int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
     mndlbrt_log_report();
     assert(mandel_struct);
 
-    //mandel_struct->x_size = Init_x_size;
-    //mandel_struct->y_size = Init_y_size;
     mandel_struct->x_shift = 0;
     mandel_struct->y_shift = 0;
 
@@ -40,13 +39,13 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
     Mandel_struct mandel_struct = { 0 };
     mandel_struct_init(&mandel_struct);
 
-    sf::RenderWindow window(sf::VideoMode(mandel_struct.x_size, mandel_struct.y_size), "Mandelbrodina");
+    sf::RenderWindow window(sf::VideoMode(X_SIZE, Y_SIZE), "Mandelbrodina");
 
     sf::Texture mandel_texture;
-    mandel_texture.create(mandel_struct.x_size, mandel_struct.y_size);
+    mandel_texture.create(X_SIZE, Y_SIZE);
 
-    mandel_struct.data = new sf::Uint32[mandel_struct.x_size * mandel_struct.y_size];
-    mandel_texture.update((sf::Uint8*) mandel_struct.data, mandel_struct.x_size, mandel_struct.y_size, 0, 0);
+    mandel_struct.data = new sf::Uint32[X_SIZE * Y_SIZE];
+    mandel_texture.update((sf::Uint8*) mandel_struct.data, X_SIZE, Y_SIZE, 0, 0);
 
     sf::Sprite sprite;
     sprite.setTexture(mandel_texture);
@@ -93,33 +92,29 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
 
                 if (event.key.code == sf::Keyboard::Right)
                 {
-                    mandel_struct.x_shift += X_shift_step;
+                    mandel_struct.x_shift -= X_shift_step;
                 }
 
                 if (event.key.code == sf::Keyboard::Left)
                 {
-                    mandel_struct.x_shift -= X_shift_step;
+                    mandel_struct.x_shift += X_shift_step;
                 }
             }
         }
 
-        //
-        //float sleep_time = (float)( rand() % 100) / 1000;
-        //sf::sleep(sf::seconds(sleep_time));
-        //sf::sleep(sf::seconds(0.016f));
-        //
+        window.clear();
 
-        if (mandelbrot_eval(mandel_struct) == -1)
+        if (mandelbrot_eval(&mandel_struct) == -1)
         {
             error_report(MANDEL_EVAL_ERR);
             return -1;
         }
 
-        window.clear();
-
         if (mode != ONLY_CALC)
+        {
+            mandel_texture.update((sf::Uint8*) mandel_struct.data, X_SIZE, Y_SIZE, 0, 0);
             window.draw(sprite);
-
+        }
         if (write_fps(&window, &fps_clock, &fps_text, &fps_ct) == -1)
             return -1;
 
@@ -165,13 +160,13 @@ int _write_fps(sf::RenderWindow* window, sf::Clock* fps_clock, sf::Text* text, s
     float cur_time = (*fps_clock).getElapsedTime().asSeconds();
     float fps = *fps_ct / (cur_time);
 
-    if (*fps_ct == SIZE_MAX)
+    if (*fps_ct == SIZE_MAX || cur_time > 1.f)
     {
         (*fps_clock).restart();
         *fps_ct = 0;
     }
 
-    printf("\n frame ct : %ld time %f \n", *fps_ct, cur_time);
+    //printf("\n frame ct : %ld time %f \n", *fps_ct, cur_time);
 
     char fps_buf[Fps_buf_size] = { 0 };
     sprintf(fps_buf, "%04.2f", fps);
@@ -184,19 +179,59 @@ int _write_fps(sf::RenderWindow* window, sf::Clock* fps_clock, sf::Text* text, s
 
 //-----------------------------------------------
 
-int _mandelbrot_eval(Mandel_struct mandel_struct FOR_LOGS(, LOG_PARAMS))
+int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 {
     mndlbrt_log_report();
 
+    int x_shift = mandel_struct->x_shift;
+    int y_shift = mandel_struct->y_shift;
+    float scale_factor = mandel_struct->scale_factor;
+
+    //printf("\n scale %f x shift %d y shift %d \n", scale_factor, x_shift, y_shift);
+
 #ifdef OPT
 
-        // 
+
+    
+
+//---------------------------------------------------------------------------------------
 
 #else 
 
-    for (int y_ct = 0; y_ct < 600; y_ct++)
+    for (int y_ct = 0; y_ct < Y_SIZE; y_ct++)
     {
-        float x0 = (0 - X_SIZE/2) 
+        float x0 = (            - X_SIZE/2 + x_shift) * Mul_x * scale_factor;
+        float y0 = ((float)y_ct - Y_SIZE/2 + y_shift) * Mul_y * scale_factor;    
+
+        for (int x_ct = 0; x_ct < X_SIZE; x_ct++, x0 += Mul_x)
+        {
+            //printf("\n cur x0 y0 %f %f x_ct y_ct %d %d \n", x0, y0 , x_ct, y_ct);
+
+            float x = x0; 
+            float y = y0;
+
+            int num = 0;
+            for (; num < Check_num; num++)
+            {
+                float x2 = x*x;
+                float y2 = y*y;
+
+                float r2 = x2 + y2;
+
+                if (r2 >= Max_r2)
+                    break;
+
+                x = x2 - y2   + x0;
+                y = 2 * x * y + y0;
+            }
+
+            unsigned char RGBA[4] = {(unsigned char)num, 98, 175, 255};
+
+            mandel_struct->data[x_ct + y_ct * X_SIZE] =(num < Check_num)? *((uint32_t*)RGBA): 1;
+
+            //mandel_struct->data[x_ct + y_ct * Y_SIZE] = *((uint32_t*)RGBA);
+
+        }
     }
 
 #endif 
