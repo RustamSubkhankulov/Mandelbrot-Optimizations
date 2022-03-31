@@ -2,7 +2,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <stdlib.h>
-#include <immitrin.h>
+//#include <immitrin.h>
 
 #include "mandelbrot.h"
 
@@ -73,10 +73,14 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 if (event.key.code == sf::Keyboard::RShift)
                 {
                     mandel_struct.scale_factor += Scale_step;
+                    //mandel_struct.x_shift -= X_SIZE / 2 * mandel_struct.scale_factor * Mul_x;
+                    //mandel_struct.y_shift -= Y_SIZE / 2 * mandel_struct.scale_factor * Mul_y; 
                 }
 
                 if (event.key.code == sf::Keyboard::LShift)
                 {
+                    //mandel_struct.x_shift += X_SIZE / 2 * mandel_struct.scale_factor * Mul_x;
+                    //mandel_struct.y_shift += Y_SIZE / 2 * mandel_struct.scale_factor * Mul_y; 
                     mandel_struct.scale_factor -= Scale_step;
                 }
 
@@ -192,7 +196,7 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 #ifdef OPT
 
 
-    
+
 
 //---------------------------------------------------------------------------------------
 
@@ -200,10 +204,10 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
     for (int y_ct = 0; y_ct < Y_SIZE; y_ct++)
     {
-        float x0 = (            - X_SIZE/2 + x_shift) * Mul_x * scale_factor;
+        float x0 = (            - X_SIZE/2 - x_shift) * Mul_x * scale_factor;
         float y0 = ((float)y_ct - Y_SIZE/2 + y_shift) * Mul_y * scale_factor;    
 
-        for (int x_ct = 0; x_ct < X_SIZE; x_ct++, x0 += Mul_x)
+        for (int x_ct = 0; x_ct < X_SIZE; x_ct++, x0 += Mul_x * scale_factor)
         {
             //printf("\n cur x0 y0 %f %f x_ct y_ct %d %d \n", x0, y0 , x_ct, y_ct);
 
@@ -241,9 +245,9 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-int _mandelbrot_show(FOR_LOGS(LOG_PARAMS))
-{
-    mndlbrt_log_report();
+// int _mandelbrot_show(FOR_LOGS(LOG_PARAMS))
+// {
+//     mndlbrt_log_report();
 
-    return 0;
-}
+//     return 0;
+// }

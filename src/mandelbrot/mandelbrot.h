@@ -51,7 +51,7 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS));
 
 int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS));
 
-int _mandelbrot_show(FOR_LOGS(LOG_PARAMS));
+// int _mandelbrot_show(FOR_LOGS(LOG_PARAMS));
 
 int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS));
 
@@ -79,6 +79,6 @@ int _text_init(sf::Text* text, sf::Font* font FOR_LOGS(, LOG_PARAMS));
 #define mandelbrot_eval(mandel_struct) \
        _mandelbrot_eval(mandel_struct FOR_LOGS(, LOG_ARGS))
 
-#define mandelbrot_show() \
-       _mandelbrot_show(FOR_LOGS(LOG_ARGS))
+// #define mandelbrot_show() \
+//        _mandelbrot_show(FOR_LOGS(LOG_ARGS))
     

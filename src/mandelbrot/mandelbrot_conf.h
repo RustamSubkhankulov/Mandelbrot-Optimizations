@@ -26,7 +26,7 @@ static const double Init_scale_factor = 1.f;
 
 //===============================================
 
-static const float Scale_step = 50 * Mul_x; 
+static const float Scale_step = 0.1; 
 
 static const int X_shift_step = 50;
 static const int Y_shift_step = 50;
