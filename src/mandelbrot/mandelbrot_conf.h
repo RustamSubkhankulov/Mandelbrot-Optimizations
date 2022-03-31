@@ -38,9 +38,9 @@ static const int Init_y_pos = 100;
 
 //===============================================
 
-static const float Max_r2  = 100.f;
+static const float Max_r2  = 4.f;
 
-static const int Check_num = 512;
+static const int Check_num = 256;
 
 //===============================================
 

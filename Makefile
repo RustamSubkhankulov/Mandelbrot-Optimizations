@@ -5,7 +5,7 @@ OBJ = obj/mndlbrt.o obj/mandelbrot.o obj/logs.o obj/general.o
 all: global
 
 global: $(OBJ) 
-	$(CC) $(OBJ) -lsfml-graphics -lsfml-window -lsfml-system -lstdc++ -o mandelbrot
+	$(CC) $(OBJ) -lsfml-graphics -lsfml-window -lsfml-system -lstdc++ -lm -o mandelbrot
 
 obj/mndlbrt.o: src/mndlbrt.cpp src/global_conf.h
 	$(CC) src/mndlbrt.cpp -c -o obj/mndlbrt.o 

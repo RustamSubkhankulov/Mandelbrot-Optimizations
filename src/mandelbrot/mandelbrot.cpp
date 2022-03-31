@@ -2,6 +2,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <stdlib.h>
+#include <math.h>
 
 #include <immintrin.h>
 
@@ -74,14 +75,10 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 if (event.key.code == sf::Keyboard::O)
                 {
                     mandel_struct.scale_factor += Scale_step * mandel_struct.scale_factor;
-                    //mandel_struct.x_shift -= X_SIZE / 2 * mandel_struct.scale_factor * Mul_x;
-                    //mandel_struct.y_shift -= Y_SIZE / 2 * mandel_struct.scale_factor * Mul_y; 
                 }
 
                 if (event.key.code == sf::Keyboard::P)
-                {
-                    //mandel_struct.x_shift += X_SIZE / 2 * mandel_struct.scale_factor * Mul_x;
-                    //mandel_struct.y_shift += Y_SIZE / 2 * mandel_struct.scale_factor * Mul_y; 
+                { 
                     mandel_struct.scale_factor -= Scale_step * mandel_struct.scale_factor;
                 }
 
@@ -171,8 +168,6 @@ int _write_fps(sf::RenderWindow* window, sf::Clock* fps_clock, sf::Text* text, s
         *fps_ct = 0;
     }
 
-    //printf("\n frame ct : %ld time %f \n", *fps_ct, cur_time);
-
     char fps_buf[Fps_buf_size] = { 0 };
     sprintf(fps_buf, "%04.2f", fps);
 
@@ -194,10 +189,56 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
     //printf("\n scale %f x shift %d y shift %d \n", scale_factor, x_shift, y_shift);
 
+//---------------------------------------------------------------------------------------
+
 #ifdef OPT
 
+    float scale_mul_x = Mul_x * scale_factor;
 
+    const __m256  _max_r2      = _mm256_set1_ps(Max_r2);
+    const __m256  _scale_mul_x = _mm256_set1_ps(scale_mul_x);
+    const __m256i _check_num   = _mm256_set1_epi32(Check_num);
+    const __m256i _iter        = _mm256_set1_epi32(8, 7, 6, 5, 4, 3, 2, 1, 0);
 
+    for (int y_ct = 0; y_ct < Y_SIZE; y_ct++)
+    {
+        float x0 = (            - X_SIZE/2) * scale_mul_x          + x_shift * Mul_x;
+        float y0 = ((float)y_ct - Y_SIZE/2) * Mul_y * scale_factor + y_shift * Mul_y; 
+
+        float x0_dif  = 8 * scale_mul_x;
+
+        for (int x_ct = 0; x_ct < X_SIZE; x_ct += 8, x0 += x0_dif)
+        {
+            __m256 _x0 = _mm256_add_ps (_mm256_set1_ps(x0), _mm256_mul_ps(_iter, _scale_mul_x));
+            __m256 _y0 = _mm256_set1_ps(y0);
+        }
+
+        __m256 _x = _x0;
+        __m256 _y = _y0;
+
+        __m256 _num = _mm256_setzero_si256();
+
+        for (int num = 0; num < Check_num; num++)
+        {
+            __m256 _x2  = _mm256_mul_ps(_x, _x);
+            __m256 _y2  = _mm256_mul_ps(_y, _y);
+
+            __m256 _r2  = _mm256_add_ps(_x2, _y2);
+
+            __m256 _cmp = _mm256_cmp_ps(_r2, _max_r2, _CMP_LE_OQ);
+
+            int mask = _mm256_movemask_ps(_cmp);
+            if (!mask) break;
+
+            _num = _mm256_sub_epi32(_num, _mm_castps_si256(cmp));
+
+            __m256 _xy = _mm256_mul_ps(_x, _y);
+            _x = _mm256_add_ps(_mm256_sub_ps(_x2, _y2), _x0);
+            _y = _mm256_add_ps(_mm256_add_ps(_xy, _xy), _y0);
+        }
+
+        
+    }
 
 //---------------------------------------------------------------------------------------
 
@@ -205,11 +246,11 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
     for (int y_ct = 0; y_ct < Y_SIZE; y_ct++)
     {
-        float x0 = (            - X_SIZE/2) * Mul_x * scale_factor - x_shift * Mul_x;
+        float x0 = (            - X_SIZE/2) * Mul_x * scale_factor + x_shift * Mul_x;
         float y0 = ((float)y_ct - Y_SIZE/2) * Mul_y * scale_factor + y_shift * Mul_y;    
 
-
-        for (int x_ct = 0; x_ct < X_SIZE; x_ct++, x0 += Mul_x * scale_factor)
+        float x0_dif = Mul_x * scale_factor;
+        for (int x_ct = 0; x_ct < X_SIZE; x_ct++, x0 += x0_dif)
         {
 
             float x = x0; 
@@ -230,10 +271,7 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
                 y = 2 * x * y + y0;
             }
 
-            //unsigned char RGBA[4] = {(unsigned char)num, 98, 175, 255};
-
-            //mandel_struct->data[x_ct + y_ct * X_SIZE] =(num < Check_num)? *((uint32_t*)RGBA): 1;
-            mandel_struct->data = get_color(num);
+            mandel_struct->data[x_ct + y_ct * X_SIZE] =(num < Check_num)? get_color(num) : 1;
         }
     }
 
@@ -248,5 +286,19 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
 {
     mndlbrt_log_report();
 
-    return 0;
+    Color color = { 0 };
+
+    num += 1 - log(log2f(abs(num)));
+
+    color.RGBA[0] = (unsigned char)(180 - num - (num % 2) * 120);
+    color.RGBA[1] = (unsigned char)(10 + 25 * ((num + 1) % 2));
+    color.RGBA[2] = (unsigned char)((num + 1) * 11);
+    color.RGBA[3] = 0xCF;
+
+    // color.RGBA[0] = (unsigned char)(255 - num);
+    // color.RGBA[1] = (unsigned char)((num % 2) * 64);
+    // color.RGBA[2] = (unsigned char)(num);
+    // color.RGBA[3] = 0xCF;
+
+    return color.number;
 }

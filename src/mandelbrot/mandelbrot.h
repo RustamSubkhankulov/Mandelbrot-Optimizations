@@ -41,7 +41,15 @@ enum Modes
     ONLY_CALC = 100,
     CALC_AND_SHOW = 200
 
-};                            
+};
+
+//===============================================
+
+union Color
+{
+    unsigned char RGBA[4];
+    uint32_t number;
+};
 
 //===============================================
 
@@ -51,15 +59,18 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS));
 
 int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS));
 
-// int _mandelbrot_show(FOR_LOGS(LOG_PARAMS));
-
 int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS));
 
 int _write_fps(sf::RenderWindow* window, sf::Clock* fps_clock, sf::Text* text, size_t* fps_ct FOR_LOGS(, LOG_PARAMS));
 
 int _text_init(sf::Text* text, sf::Font* font FOR_LOGS(, LOG_PARAMS));
 
+uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS));
+
 //===============================================
+
+#define get_color(num) \
+       _get_color(num FOR_LOGS(LOG_ARGS))
 
 #define text_init(text, font) \
        _text_init(text, font FOR_LOGS(, LOG_ARGS))
