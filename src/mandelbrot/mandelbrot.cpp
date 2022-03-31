@@ -2,7 +2,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <stdlib.h>
-//#include <immitrin.h>
+
+#include <immintrin.h>
 
 #include "mandelbrot.h"
 
@@ -70,38 +71,38 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
 
             if (event.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::RShift)
+                if (event.key.code == sf::Keyboard::O)
                 {
-                    mandel_struct.scale_factor += Scale_step;
+                    mandel_struct.scale_factor += Scale_step * mandel_struct.scale_factor;
                     //mandel_struct.x_shift -= X_SIZE / 2 * mandel_struct.scale_factor * Mul_x;
                     //mandel_struct.y_shift -= Y_SIZE / 2 * mandel_struct.scale_factor * Mul_y; 
                 }
 
-                if (event.key.code == sf::Keyboard::LShift)
+                if (event.key.code == sf::Keyboard::P)
                 {
                     //mandel_struct.x_shift += X_SIZE / 2 * mandel_struct.scale_factor * Mul_x;
                     //mandel_struct.y_shift += Y_SIZE / 2 * mandel_struct.scale_factor * Mul_y; 
-                    mandel_struct.scale_factor -= Scale_step;
+                    mandel_struct.scale_factor -= Scale_step * mandel_struct.scale_factor;
                 }
 
                 if (event.key.code == sf::Keyboard::Up)
                 {
-                    mandel_struct.y_shift += Y_shift_step;
+                    mandel_struct.y_shift += Y_shift_step * mandel_struct.scale_factor;
                 }
 
                 if (event.key.code == sf::Keyboard::Down)
                 {
-                    mandel_struct.y_shift -= Y_shift_step;
+                    mandel_struct.y_shift -= Y_shift_step * mandel_struct.scale_factor;
                 }
 
                 if (event.key.code == sf::Keyboard::Right)
                 {
-                    mandel_struct.x_shift -= X_shift_step;
+                    mandel_struct.x_shift -= X_shift_step * mandel_struct.scale_factor;
                 }
 
                 if (event.key.code == sf::Keyboard::Left)
                 {
-                    mandel_struct.x_shift += X_shift_step;
+                    mandel_struct.x_shift += X_shift_step * mandel_struct.scale_factor;
                 }
             }
         }
@@ -204,12 +205,12 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
     for (int y_ct = 0; y_ct < Y_SIZE; y_ct++)
     {
-        float x0 = (            - X_SIZE/2 - x_shift) * Mul_x * scale_factor;
-        float y0 = ((float)y_ct - Y_SIZE/2 + y_shift) * Mul_y * scale_factor;    
+        float x0 = (            - X_SIZE/2) * Mul_x * scale_factor - x_shift * Mul_x;
+        float y0 = ((float)y_ct - Y_SIZE/2) * Mul_y * scale_factor + y_shift * Mul_y;    
+
 
         for (int x_ct = 0; x_ct < X_SIZE; x_ct++, x0 += Mul_x * scale_factor)
         {
-            //printf("\n cur x0 y0 %f %f x_ct y_ct %d %d \n", x0, y0 , x_ct, y_ct);
 
             float x = x0; 
             float y = y0;
@@ -229,12 +230,10 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
                 y = 2 * x * y + y0;
             }
 
-            unsigned char RGBA[4] = {(unsigned char)num, 98, 175, 255};
+            //unsigned char RGBA[4] = {(unsigned char)num, 98, 175, 255};
 
-            mandel_struct->data[x_ct + y_ct * X_SIZE] =(num < Check_num)? *((uint32_t*)RGBA): 1;
-
-            //mandel_struct->data[x_ct + y_ct * Y_SIZE] = *((uint32_t*)RGBA);
-
+            //mandel_struct->data[x_ct + y_ct * X_SIZE] =(num < Check_num)? *((uint32_t*)RGBA): 1;
+            mandel_struct->data = get_color(num);
         }
     }
 
@@ -245,9 +244,9 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-// int _mandelbrot_show(FOR_LOGS(LOG_PARAMS))
-// {
-//     mndlbrt_log_report();
+uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
+{
+    mndlbrt_log_report();
 
-//     return 0;
-// }
+    return 0;
+}

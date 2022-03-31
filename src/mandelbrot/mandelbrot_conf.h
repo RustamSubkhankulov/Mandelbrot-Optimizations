@@ -26,10 +26,10 @@ static const double Init_scale_factor = 1.f;
 
 //===============================================
 
-static const float Scale_step = 0.1; 
+static const float Scale_step = 0.01; 
 
-static const int X_shift_step = 50;
-static const int Y_shift_step = 50;
+static const int X_shift_step = 10;
+static const int Y_shift_step = 10;
 
 //===============================================
 
@@ -40,7 +40,7 @@ static const int Init_y_pos = 100;
 
 static const float Max_r2  = 100.f;
 
-static const int Check_num = 256;
+static const int Check_num = 512;
 
 //===============================================
 
@@ -50,7 +50,7 @@ static const int Fps_buf_size  = 1024;
 
 static const int Fps_char_size = 32;
 
-static const sf::Color Fps_color = sf::Color::Red;
+static const sf::Color Fps_color = sf::Color::Green;
 
 //===============================================
 
