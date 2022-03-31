@@ -54,6 +54,6 @@ static const sf::Color Fps_color = sf::Color::Green;
 
 //===============================================
 
-//#define OPT
+#define OPT
 
 //===============================================
