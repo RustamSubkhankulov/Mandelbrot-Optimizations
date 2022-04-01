@@ -24,8 +24,8 @@ int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
     mndlbrt_log_report();
     assert(mandel_struct);
 
-    mandel_struct->x_shift = 0;
-    mandel_struct->y_shift = 0;
+    mandel_struct->x_shift = Init_x_shift;
+    mandel_struct->y_shift = Init_y_shift;
 
     mandel_struct->scale_factor = Init_scale_factor;
 
@@ -90,24 +90,29 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 else if (event.key.code == sf::Keyboard::Up)
                 {
                     mandel_struct.y_shift += Y_shift_step * mandel_struct.scale_factor;
+                    printf("\n y+ %f step*scale %f\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
+
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Down)
                 {
                     mandel_struct.y_shift -= Y_shift_step * mandel_struct.scale_factor;
+                    printf("\n y- %f step*scale %f\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Right)
                 {
                     mandel_struct.x_shift -= X_shift_step * mandel_struct.scale_factor;
+                    printf("\n x- %f step*scale %f\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Left)
                 {
                     mandel_struct.x_shift += X_shift_step * mandel_struct.scale_factor;
+                    printf("\n x+ %f step*scale %f\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
@@ -212,8 +217,8 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 {
     mndlbrt_log_report();
 
-    int x_shift = mandel_struct->x_shift;
-    int y_shift = mandel_struct->y_shift;
+    float x_shift = mandel_struct->x_shift;
+    float y_shift = mandel_struct->y_shift;
     float scale_factor = mandel_struct->scale_factor;
 
     //printf("\n scale %f x shift %d y shift %d \n", scale_factor, x_shift, y_shift);
@@ -326,6 +331,14 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
     Color color = { 0 };
 
     num += 1 - log(log2f(abs(num)));
+
+    // if ((num % 2) == 1) 
+    //     color.number = 0;
+    // else 
+    //     color.number = 0xFFFFFFFF;
+
+    // if (num >= Check_num)
+    //     color.number = 0;
 
     color.RGBA[0] = (unsigned char)(180 - num - (num % 2) * 120);
     color.RGBA[1] = (unsigned char)(10 + 25 * ((num + 1) % 2));

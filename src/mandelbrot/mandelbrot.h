@@ -22,8 +22,8 @@
 
 struct Mandel_struct
 {
-    int x_shift;
-    int y_shift;
+    float x_shift;
+    float y_shift;
 
     //int x_size;
     //int y_size;
