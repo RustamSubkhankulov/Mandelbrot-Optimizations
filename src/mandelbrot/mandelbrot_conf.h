@@ -23,7 +23,6 @@ static const double Init_y_shift = 0.f;
 
 static const double Mul_x = 1/128.f;
 static const double Mul_y = 1/128.f;
-//static const float Mul = 1/128.f;
 
 static const double Init_scale_factor = 0.6f;
 
@@ -33,11 +32,6 @@ static const double Scale_step = 0.1;
 
 static const double X_shift_step = 10.f;
 static const double Y_shift_step = 10.f;
-
-//===============================================
-
-// static const int Init_x_pos = 100;
-// static const int Init_y_pos = 100;
 
 //===============================================
 

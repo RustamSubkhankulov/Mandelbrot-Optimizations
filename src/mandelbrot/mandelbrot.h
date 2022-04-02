@@ -53,6 +53,7 @@ union Color
 
 //===============================================
 
+
 enum Modes _parse_cmndln(int argc, char* argv[] FOR_LOGS(, LOG_PARAMS));
 
 int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS));

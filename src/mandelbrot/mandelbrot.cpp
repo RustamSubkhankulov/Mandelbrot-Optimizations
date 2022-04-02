@@ -90,29 +90,24 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 else if (event.key.code == sf::Keyboard::Down)
                 {
                     mandel_struct.y_shift += Y_shift_step * mandel_struct.scale_factor;
-                    //printf("\n y+ %lf step*scale %lf\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
-
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Up)
                 {
                     mandel_struct.y_shift -= Y_shift_step * mandel_struct.scale_factor;
-                    //printf("\n y- %lf step*scale %lf\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Left)
                 {
                     mandel_struct.x_shift -= X_shift_step * mandel_struct.scale_factor;
-                    //printf("\n x- %lf step*scale %lf\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Right)
                 {
                     mandel_struct.x_shift += X_shift_step * mandel_struct.scale_factor;
-                    //printf("\n x+ %lf step*scale %lf\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
@@ -127,8 +122,6 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
         }
 
         window.clear();
-
-        //printf("\n flag is %d \n", no_evaluation_flag);
 
         if (no_evaluation_opt && no_evaluation_flag)
         {
@@ -288,18 +281,9 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
     Color color = { 0 };
 
     float num_f = (float)num;
-    
-    //float num_f = (float)num + 1 - log(log2f(abs(num)));
-
-    // if ((num % 2) == 1) 
-    //     color.number = 0;
-    // else 
-    //     color.number = 0xFFFFFFFF;
 
     if (num >= Check_num)
         return 0xFFFFFFFF;
-
-    //float f_num = (float)num / 2;
 
     unsigned char color_byte = (unsigned char) (sin (num_f / 256 * 3.14) * 255);
 
@@ -308,20 +292,10 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
     color.RGBA[2] = 255;
     color.RGBA[3] = color_byte;
 
-    // if (num < 255)
-    // {
-    //     color.RGBA[0] = 236;
-    //     color.RGBA[1] = 163;
-    //     color.RGBA[2] = 11;
-    //     color.RGBA[3] = color_byte;
-    // }
-    // else
-    // {
-    //     color.RGBA[0] = 12;
-    //     color.RGBA[1] = 216;
-    //     color.RGBA[2] = 237;
-    //     color.RGBA[3] = color_byte;
-    // }
+    // color.RGBA[0] = num_f;
+    // color.RGBA[1] = num_f;
+    // color.RGBA[2] = 255;
+    // color.RGBA[3] = num_f;
 
     return color.number;
 }
