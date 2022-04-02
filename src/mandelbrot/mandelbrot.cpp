@@ -1,10 +1,4 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
 #include <SFML/System.hpp>
-#include <stdlib.h>
-#include <math.h>
-
-#include <immintrin.h>
 
 #include "mandelbrot.h"
 
@@ -230,8 +224,8 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
         for (int x_ct = 0; x_ct < X_SIZE; x_ct += 8, x0 += x0_dif)
         {
-                __m256 _x0 = _mm256_add_ps (_mm256_set1_ps(x0), _mm256_mul_ps(_iter, _scale_mul_x));
-                __m256 _y0 = _mm256_set1_ps(y0);
+            __m256 _x0 = _mm256_add_ps (_mm256_set1_ps(x0), _mm256_mul_ps(_iter, _scale_mul_x));
+            __m256 _y0 = _mm256_set1_ps(y0);
             
 
             __m256 _x = _x0;
@@ -258,14 +252,49 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
                 _y = _mm256_add_ps(_mm256_add_ps(_xy, _xy), _y0);
             }
 
-            int   numbers[8]   = { 0 };
+            alignas(32) int   numbers  [8] = { 0 };
             alignas(32) float numbers_f[8] = { 0 }; 
             _mm256_maskstore_epi32(numbers, _mm256_set1_epi8(0xFF), _num);
 
             ARR_INT8_TO_FLOAT8(numbers, numbers_f);
 
             __m256 _num_f = _mm256_load_ps(numbers_f);
-            _num_f = _mm256_div
+            __m256 _256_f = _mm256_set1_ps(256.f);
+                   _num_f = _mm256_div(_num_f, _256_f);
+
+            __m256 _pi_f  = _mm256_set1_ps(3.141592f);
+                  _num_f  = _mm256_mul_ps(_num_f, _pi_f);
+
+            _num_f = _ZGVdN8v_sinf(_num_f);
+            _num_f = _mm256_mul_ps(_num_f, _256_f);
+
+            float color_values_float[8] = { 0 };
+            _mm256_maskstore_ps(color_values_float, _mm256_set1_epi8(0xFF), _num_f);
+            
+            int color_values_int[8] = { 0 };
+            ARR_FLOAT8_TO_INT8(color_values_float, color_values_int);
+
+            __m256i _colors_int = _mm256_load_si256((__m256i*)color_values_int);
+            __m256i _256_int    = _mm256_set1_epi32(256);
+            __m256i _255_int    = _mm256_set1_epi32(255);  
+
+            __m256i _temp_eval  = _mm256_add_epi32(_mm256_mul_epi32(_256_int, _colors_int), _255_int);
+
+            __m256i _colors     = _mm256_add_epi32(_mm256_mul_epi32(_255_int, _temp_eval), _temp_eval);
+
+            alignas(32) int colors[8] = { 0 };
+            _mm256_maskstore_epi32(colors, _mm256_set1_epi8(0xFF), _colors);
+
+            int offset = x_ct + y_ct * X_SIZE;
+
+            mandel_struct->data[offset + 0] = colors[0];
+            mandel_struct->data[offset + 1] = colors[1];
+            mandel_struct->data[offset + 2] = colors[2];
+            mandel_struct->data[offset + 3] = colors[3];
+            mandel_struct->data[offset + 4] = colors[4];
+            mandel_struct->data[offset + 5] = colors[5];
+            mandel_struct->data[offset + 6] = colors[6];
+            mandel_struct->data[offset + 7] = colors[7];
         }
     }
     
@@ -275,27 +304,27 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 //-----------------------------------------------
 
 uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
-{
-    mndlbrt_log_report();
-
-    Color color = { 0 };
-
-    float num_f = (float)num;
-
-    if (num >= Check_num)
-        return 0xFFFFFFFF;
-
-    unsigned char color_byte = (unsigned char) (sin (num_f / 256 * 3.14) * 255);
-
-    color.RGBA[0] = color_byte;
-    color.RGBA[1] = color_byte;
-    color.RGBA[2] = 255;
-    color.RGBA[3] = color_byte;
-
-    // color.RGBA[0] = num_f;
-    // color.RGBA[1] = num_f;
-    // color.RGBA[2] = 255;
-    // color.RGBA[3] = num_f;
-
-    return color.number;
-}
+{ 
+    mndlbrt_log_report(); 
+ 
+    Color color = { 0 }; 
+ 
+    float num_f = (float)num; 
+ 
+    if (num >= Check_num) 
+        return 0xFFFFFFFF; 
+ 
+    unsigned char color_byte  = (unsigned char) (sin (num_f / 256 * 3.14) * 255);
+  
+    color.RGBA[0] = color_byt e; 
+    color.RGBA[1] = color_byt e; 
+    color.RGBA[2] = 255;  
+    color.RGBA[3] = color_byt e; 
+  
+    // color.RGBA[0] = num_f; 
+    // color.RGBA[1] = num_f; 
+    // color.RGBA[2] = 255; 
+    // color.RGBA[3] = num_f; 
+ 
+    return color.number; 
+} 
