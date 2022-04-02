@@ -15,24 +15,24 @@
 static const int Init_x_size = 768;
 static const int Init_y_size = 512;
 
-static const float Init_x_shift = -64.f;
-static const float Init_y_shift = 0.f;
+static const double Init_x_shift = -64.f;
+static const double Init_y_shift = 0.f;
 
 #define X_SIZE 768
 #define Y_SIZE 512
 
-static const float Mul_x = 1/128.f;
-static const float Mul_y = 1/128.f;
+static const double Mul_x = 1/128.f;
+static const double Mul_y = 1/128.f;
 //static const float Mul = 1/128.f;
 
 static const double Init_scale_factor = 0.6f;
 
 //===============================================
 
-static const float Scale_step = 0.01; 
+static const double Scale_step = 0.01; 
 
-static const float X_shift_step = 10.f;
-static const float Y_shift_step = 10.f;
+static const double X_shift_step = 10.f;
+static const double Y_shift_step = 10.f;
 
 //===============================================
 
@@ -41,7 +41,7 @@ static const float Y_shift_step = 10.f;
 
 //===============================================
 
-static const float Max_r2  = 4.f;
+static const double Max_r2  = 4.f;
 
 static const int Check_num = 512;
 
@@ -57,6 +57,6 @@ static const sf::Color Fps_color = sf::Color::Green;
 
 //===============================================
 
-#define OPT
+//#define OPT
 
 //===============================================
