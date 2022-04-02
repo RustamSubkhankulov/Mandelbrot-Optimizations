@@ -75,19 +75,19 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
 
             if (event.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::PageUp)
+                if (event.key.code == sf::Keyboard::PageDown)
                 {
                     mandel_struct.scale_factor += Scale_step * mandel_struct.scale_factor;
                     no_evaluation_flag = 0;
                 }
 
-                else if (event.key.code == sf::Keyboard::PageDown)
+                else if (event.key.code == sf::Keyboard::PageUp)
                 { 
                     mandel_struct.scale_factor -= Scale_step * mandel_struct.scale_factor;
                     no_evaluation_flag = 0;
                 }
 
-                else if (event.key.code == sf::Keyboard::Up)
+                else if (event.key.code == sf::Keyboard::Down)
                 {
                     mandel_struct.y_shift += Y_shift_step * mandel_struct.scale_factor;
                     //printf("\n y+ %lf step*scale %lf\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
@@ -95,21 +95,21 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                     no_evaluation_flag = 0;
                 }
 
-                else if (event.key.code == sf::Keyboard::Down)
+                else if (event.key.code == sf::Keyboard::Up)
                 {
                     mandel_struct.y_shift -= Y_shift_step * mandel_struct.scale_factor;
                     //printf("\n y- %lf step*scale %lf\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
-                else if (event.key.code == sf::Keyboard::Right)
+                else if (event.key.code == sf::Keyboard::Left)
                 {
                     mandel_struct.x_shift -= X_shift_step * mandel_struct.scale_factor;
                     //printf("\n x- %lf step*scale %lf\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
-                else if (event.key.code == sf::Keyboard::Left)
+                else if (event.key.code == sf::Keyboard::Right)
                 {
                     mandel_struct.x_shift += X_shift_step * mandel_struct.scale_factor;
                     //printf("\n x+ %lf step*scale %lf\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
@@ -287,25 +287,40 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
 
     Color color = { 0 };
 
-    num += 1 - log(log2f(abs(num)));
+    //num += 1 - log(log2f(abs(num)));
 
     // if ((num % 2) == 1) 
     //     color.number = 0;
     // else 
     //     color.number = 0xFFFFFFFF;
 
-    // if (num >= Check_num)
-    //     color.number = 0;
+    if (num >= Check_num)
+        return 0xFFFFFFFF;
 
-    color.RGBA[0] = (unsigned char)(180 - num - (num % 2) * 120);
-    color.RGBA[1] = (unsigned char)(10 + 25 * ((num + 1) % 2));
-    color.RGBA[2] = (unsigned char)((num + 1) * 11);
-    color.RGBA[3] = 0xCF;
+    //float f_num = (float)num / 2;
 
-    // color.RGBA[0] = (unsigned char)(255 - num);
-    // color.RGBA[1] = (unsigned char)((num % 2) * 64);
-    // color.RGBA[2] = (unsigned char)(num);
-    // color.RGBA[3] = 0xCF;
+    unsigned char color_byte = (unsigned char) (sin ((float)num / 256 * 3.14) * 255);
 
+    color.RGBA[0] = color_byte;
+    color.RGBA[1] = 255 - color_byte;
+    color.RGBA[2] = 255;
+    color.RGBA[3] = color_byte;
+
+    
+    // if (num < 255)
+    // {
+    //     color.RGBA[0] = 255;
+    //     color.RGBA[1] = num;
+    //     color.RGBA[2] = 89;
+    //     color.RGBA[3] = 255;
+    // }
+
+    // else 
+    // {
+    //     color.RGBA[0] = num;
+    //     color.RGBA[1] = 135;
+    //     color.RGBA[2] = 255;
+    //     color.RGBA[3] = 255;
+    // }
     return color.number;
 }

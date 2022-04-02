@@ -29,7 +29,7 @@ static const double Init_scale_factor = 0.6f;
 
 //===============================================
 
-static const double Scale_step = 0.01; 
+static const double Scale_step = 0.1; 
 
 static const double X_shift_step = 10.f;
 static const double Y_shift_step = 10.f;
@@ -43,7 +43,7 @@ static const double Y_shift_step = 10.f;
 
 static const double Max_r2  = 4.f;
 
-static const int Check_num = 512;
+static const int Check_num = 255;
 
 //===============================================
 
