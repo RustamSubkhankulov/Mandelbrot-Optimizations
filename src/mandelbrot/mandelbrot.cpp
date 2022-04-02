@@ -287,7 +287,9 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
 
     Color color = { 0 };
 
-    //num += 1 - log(log2f(abs(num)));
+    float num_f = (float)num;
+    
+    //float num_f = (float)num + 1 - log(log2f(abs(num)));
 
     // if ((num % 2) == 1) 
     //     color.number = 0;
@@ -299,28 +301,27 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
 
     //float f_num = (float)num / 2;
 
-    unsigned char color_byte = (unsigned char) (sin ((float)num / 256 * 3.14) * 255);
+    unsigned char color_byte = (unsigned char) (sin (num_f / 256 * 3.14) * 255);
 
     color.RGBA[0] = color_byte;
-    color.RGBA[1] = 255 - color_byte;
+    color.RGBA[1] = color_byte;
     color.RGBA[2] = 255;
     color.RGBA[3] = color_byte;
 
-    
     // if (num < 255)
     // {
-    //     color.RGBA[0] = 255;
-    //     color.RGBA[1] = num;
-    //     color.RGBA[2] = 89;
-    //     color.RGBA[3] = 255;
+    //     color.RGBA[0] = 236;
+    //     color.RGBA[1] = 163;
+    //     color.RGBA[2] = 11;
+    //     color.RGBA[3] = color_byte;
+    // }
+    // else
+    // {
+    //     color.RGBA[0] = 12;
+    //     color.RGBA[1] = 216;
+    //     color.RGBA[2] = 237;
+    //     color.RGBA[3] = color_byte;
     // }
 
-    // else 
-    // {
-    //     color.RGBA[0] = num;
-    //     color.RGBA[1] = 135;
-    //     color.RGBA[2] = 255;
-    //     color.RGBA[3] = 255;
-    // }
     return color.number;
 }

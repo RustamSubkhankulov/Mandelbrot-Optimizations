@@ -43,7 +43,7 @@ static const double Y_shift_step = 10.f;
 
 static const double Max_r2  = 4.f;
 
-static const int Check_num = 255;
+static const int Check_num = 512;
 
 //===============================================
 
