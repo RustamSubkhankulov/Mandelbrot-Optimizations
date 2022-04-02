@@ -75,13 +75,13 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
 
             if (event.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::O)
+                if (event.key.code == sf::Keyboard::PageUp)
                 {
                     mandel_struct.scale_factor += Scale_step * mandel_struct.scale_factor;
                     no_evaluation_flag = 0;
                 }
 
-                else if (event.key.code == sf::Keyboard::P)
+                else if (event.key.code == sf::Keyboard::PageDown)
                 { 
                     mandel_struct.scale_factor -= Scale_step * mandel_struct.scale_factor;
                     no_evaluation_flag = 0;
@@ -221,38 +221,61 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
     double y_shift = mandel_struct->y_shift;
     double scale_factor = mandel_struct->scale_factor;
 
+    float scale_mul_x = Mul_x * scale_factor;
+
+    const __m256  _max_r2      = _mm256_set1_ps(Max_r2);
+    const __m256  _scale_mul_x = _mm256_set1_ps(scale_mul_x);
+    const __m256i _check_num   = _mm256_set1_epi32(Check_num);
+    const __m256  _iter        = _mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0);
+
     for (int y_ct = 0; y_ct < Y_SIZE; y_ct++)
     {
-        double x0 = (            - X_SIZE/2) * Mul_x * scale_factor + x_shift * Mul_x;
-        double y0 = ((float)y_ct - Y_SIZE/2) * Mul_y * scale_factor + y_shift * Mul_y;
+        float x0 = (            - X_SIZE/2) * scale_mul_x          + x_shift * Mul_x;
+        float y0 = ((float)y_ct - Y_SIZE/2) * Mul_y * scale_factor + y_shift * Mul_y; 
 
-        double x0_dif = Mul_x * scale_factor;
-        for (int x_ct = 0; x_ct < X_SIZE; x_ct++, x0 += x0_dif)
+        float x0_dif  = 8 * scale_mul_x;
+
+        for (int x_ct = 0; x_ct < X_SIZE; x_ct += 8, x0 += x0_dif)
         {
+                __m256 _x0 = _mm256_add_ps (_mm256_set1_ps(x0), _mm256_mul_ps(_iter, _scale_mul_x));
+                __m256 _y0 = _mm256_set1_ps(y0);
+            
 
-            double x = x0; 
-            double y = y0;
+            __m256 _x = _x0;
+            __m256 _y = _y0;
 
-            int num = 0;
-            for (; num < Check_num; num++)
+            __m256i _num = _mm256_setzero_si256();
+
+            for (int num = 0; num < Check_num; num++)
             {
-                double x2 = x * x;
-                double y2 = y * y;
-                double xy = x * y;
+                __m256 _x2  = _mm256_mul_ps(_x, _x);
+                __m256 _y2  = _mm256_mul_ps(_y, _y);
 
-                double r2 = x2 + y2;
+                __m256 _r2  = _mm256_add_ps(_x2, _y2);
 
-                if (r2 >= Max_r2)
-                    break;
+                __m256 _cmp = _mm256_cmp_ps(_r2, _max_r2, _CMP_LE_OQ);
 
-                x = x2 - y2   + x0;
-                y = 2  * xy   + y0;
+                int mask = _mm256_movemask_ps(_cmp);
+                if (!mask) break;
+
+                _num = _mm256_sub_epi32(_num, _mm256_castps_si256(_cmp));
+
+                __m256 _xy = _mm256_mul_ps(_x, _y);
+                _x = _mm256_add_ps(_mm256_sub_ps(_x2, _y2), _x0);
+                _y = _mm256_add_ps(_mm256_add_ps(_xy, _xy), _y0);
             }
 
-            mandel_struct->data[x_ct + y_ct * X_SIZE] =(num < Check_num)? get_color(num) : 1;
+            int numbers[8] = { 0 };
+            _mm256_maskstore_epi32(numbers, _mm256_set1_epi8(0xFF), _num);
+
+            for (int ct = 0; ct < 8; ct++)
+            {
+                //printf ("\n number %d is %d \n", ct, numbers[ct]);
+                mandel_struct->data[x_ct + y_ct * X_SIZE + ct] =(numbers[ct] < Check_num)? get_color(numbers[ct]) : 1;
+            }
         }
     }
-
+    
     return 0;
 }
 

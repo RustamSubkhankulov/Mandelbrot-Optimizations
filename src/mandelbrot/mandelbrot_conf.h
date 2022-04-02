@@ -54,9 +54,3 @@ static const int Fps_buf_size  = 1024;
 static const int Fps_char_size = 32;
 
 static const sf::Color Fps_color = sf::Color::Green;
-
-//===============================================
-
-//#define OPT
-
-//===============================================
