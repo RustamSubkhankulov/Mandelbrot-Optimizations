@@ -53,6 +53,22 @@ union Color
 
 //===============================================
 
+#define ARR_INT8_TO_FLOAT8(arr_int, arr_int)    \
+                                                \
+    do                                          \
+    {                                           \
+        arr_float[0] = (float)int_arr[0];       \
+        arr_float[1] = (float)int_arr[1];       \
+        arr_float[2] = (float)int_arr[2];       \
+        arr_float[3] = (float)int_arr[3];       \
+        arr_float[4] = (float)int_arr[4];       \
+        arr_float[5] = (float)int_arr[5];       \
+        arr_float[6] = (float)int_arr[6];       \
+        arr_float[7] = (float)int_arr[7];       \
+                                                \
+    } while(0);
+
+//===============================================
 
 enum Modes _parse_cmndln(int argc, char* argv[] FOR_LOGS(, LOG_PARAMS));
 

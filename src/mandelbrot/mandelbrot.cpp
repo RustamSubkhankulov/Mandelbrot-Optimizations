@@ -258,14 +258,14 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
                 _y = _mm256_add_ps(_mm256_add_ps(_xy, _xy), _y0);
             }
 
-            int numbers[8] = { 0 };
+            int   numbers[8]   = { 0 };
+            alignas(32) float numbers_f[8] = { 0 }; 
             _mm256_maskstore_epi32(numbers, _mm256_set1_epi8(0xFF), _num);
 
-            for (int ct = 0; ct < 8; ct++)
-            {
-                //printf ("\n number %d is %d \n", ct, numbers[ct]);
-                mandel_struct->data[x_ct + y_ct * X_SIZE + ct] =(numbers[ct] < Check_num)? get_color(numbers[ct]) : 1;
-            }
+            ARR_INT8_TO_FLOAT8(numbers, numbers_f);
+
+            __m256 _num_f = _mm256_load_ps(numbers_f);
+            _num_f = _mm256_div
         }
     }
     
