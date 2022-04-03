@@ -260,18 +260,22 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
             __m256 _num_f = _mm256_load_ps(numbers_f);
             __m256 _256_f = _mm256_set1_ps(256.f);
-                   _num_f = _mm256_div(_num_f, _256_f);
+                   _num_f = _mm256_div_ps (_num_f, _256_f);
 
             __m256 _pi_f  = _mm256_set1_ps(3.141592f);
                   _num_f  = _mm256_mul_ps(_num_f, _pi_f);
 
-            _num_f = _ZGVdN8v_sinf(_num_f);
-            _num_f = _mm256_mul_ps(_num_f, _256_f);
+            //_num_f = _ZGVdN8v_sinf(_num_f);
+            //_num_f = _mm256_sin_ps(_num_f);
+            //_num_f = _mm256_mul_ps(_num_f, _256_f);
 
             float color_values_float[8] = { 0 };
-            _mm256_maskstore_ps(color_values_float, _mm256_set1_epi8(0xFF), _num_f);
-            
             int color_values_int[8] = { 0 };
+
+            _mm256_maskstore_ps(color_values_float, _mm256_set1_epi8(0xFF), _num_f);
+
+            ARR_FLOAT8_SIN(color_values_float);
+            ARR_FLOAT8_MUL_NUM(color_values_float, 256.f);
             ARR_FLOAT8_TO_INT8(color_values_float, color_values_int);
 
             __m256i _colors_int = _mm256_load_si256((__m256i*)color_values_int);
@@ -316,10 +320,10 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
  
     unsigned char color_byte  = (unsigned char) (sin (num_f / 256 * 3.14) * 255);
   
-    color.RGBA[0] = color_byt e; 
-    color.RGBA[1] = color_byt e; 
-    color.RGBA[2] = 255;  
-    color.RGBA[3] = color_byt e; 
+    color.RGBA[0] = color_byte; 
+    color.RGBA[1] = color_byte; 
+    color.RGBA[2] = 255; 
+    color.RGBA[3] = color_byte; 
   
     // color.RGBA[0] = num_f; 
     // color.RGBA[1] = num_f; 
