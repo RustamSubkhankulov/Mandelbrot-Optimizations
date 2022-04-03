@@ -25,22 +25,9 @@ struct Mandel_struct
     double x_shift;
     double y_shift;
 
-    //int x_size;
-    //int y_size;
-
     sf::Uint32* data;
 
     double scale_factor;
-};
-
-//===============================================
-
-enum Modes
-{
-
-    ONLY_CALC = 100,
-    CALC_AND_SHOW = 200
-
 };
 
 //===============================================
@@ -53,9 +40,7 @@ union Color
 
 //===============================================
 
-enum Modes _parse_cmndln(int argc, char* argv[] FOR_LOGS(, LOG_PARAMS));
-
-int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS));
+int _mandelbrot_exec(FOR_LOGS(LOG_PARAMS));
 
 int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS));
 
@@ -81,15 +66,10 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS));
 #define mandel_struct_init(mandel_struct) \
        _mandel_struct_init(mandel_struct FOR_LOGS(, LOG_ARGS))
 
-#define parse_cmndln(argc, argv) \
-       _parse_cmndln(argc, argv FOR_LOGS(, LOG_ARGS))
-
-#define mandelbrot_exec(mode) \
-       _mandelbrot_exec(mode FOR_LOGS(, LOG_ARGS))
+#define mandelbrot_exec() \
+       _mandelbrot_exec(FOR_LOGS(LOG_ARGS))
 
 #define mandelbrot_eval(mandel_struct) \
        _mandelbrot_eval(mandel_struct FOR_LOGS(, LOG_ARGS))
 
-// #define mandelbrot_show() \
-//        _mandelbrot_show(FOR_LOGS(LOG_ARGS))
     

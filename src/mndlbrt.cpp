@@ -14,9 +14,7 @@ int main(int argc, char* argv[])
 
     #endif 
 
-    enum Modes mode = parse_cmndln(argc, argv);
-
-    mandelbrot_exec(mode);
+    mandelbrot_exec();
 
     #ifdef LOGS 
         close_log_file();

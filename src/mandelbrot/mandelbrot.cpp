@@ -10,15 +10,6 @@
 
 //===============================================
 
-enum Modes _parse_cmndln(int argc, char* argv[] FOR_LOGS(, LOG_PARAMS))
-{
-    mndlbrt_log_report();
-
-    return CALC_AND_SHOW;
-}
-
-//-----------------------------------------------
-
 int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 {
     mndlbrt_log_report();
@@ -34,7 +25,7 @@ int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
+int _mandelbrot_exec(FOR_LOGS(LOG_PARAMS))
 {
     mndlbrt_log_report();
 
@@ -90,7 +81,6 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 else if (event.key.code == sf::Keyboard::Up)
                 {
                     mandel_struct.y_shift += Y_shift_step * mandel_struct.scale_factor;
-                    //printf("\n y+ %lf step*scale %lf\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
 
                     no_evaluation_flag = 0;
                 }
@@ -98,21 +88,18 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 else if (event.key.code == sf::Keyboard::Down)
                 {
                     mandel_struct.y_shift -= Y_shift_step * mandel_struct.scale_factor;
-                    //printf("\n y- %lf step*scale %lf\n", mandel_struct.y_shift, Y_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Right)
                 {
                     mandel_struct.x_shift -= X_shift_step * mandel_struct.scale_factor;
-                    //printf("\n x- %lf step*scale %lf\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Left)
                 {
                     mandel_struct.x_shift += X_shift_step * mandel_struct.scale_factor;
-                    //printf("\n x+ %lf step*scale %lf\n", mandel_struct.x_shift, X_shift_step * mandel_struct.scale_factor);
                     no_evaluation_flag = 0;
                 }
 
@@ -128,8 +115,6 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
 
         window.clear();
 
-        //printf("\n flag is %d \n", no_evaluation_flag);
-
         if (no_evaluation_opt && no_evaluation_flag)
         {
             window.draw(sprite);
@@ -143,11 +128,9 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 return -1;
             }
 
-            if (mode != ONLY_CALC)
-            {
-                mandel_texture.update((sf::Uint8*) mandel_struct.data, X_SIZE, Y_SIZE, 0, 0);
-                window.draw(sprite);
-            }
+            mandel_texture.update((sf::Uint8*) mandel_struct.data, X_SIZE, Y_SIZE, 0, 0);
+            window.draw(sprite);
+            
         }
 
         if (write_fps(&window, &fps_clock, &fps_text, &fps_ct) == -1)
@@ -264,25 +247,15 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
 
     Color color = { 0 };
 
-    num += 1 - log(log2f(abs(num)));
+    if (num >= Check_num)
+        return 1;
 
-    // if ((num % 2) == 1) 
-    //     color.number = 0;
-    // else 
-    //     color.number = 0xFFFFFFFF;
+    unsigned char color_byte  = (unsigned char) (sin ((float)num / 256 * 3.14) * 255);
 
-    // if (num >= Check_num)
-    //     color.number = 0;
-
-    color.RGBA[0] = (unsigned char)(180 - num - (num % 2) * 120);
-    color.RGBA[1] = (unsigned char)(10 + 25 * ((num + 1) % 2));
-    color.RGBA[2] = (unsigned char)((num + 1) * 11);
-    color.RGBA[3] = 0xCF;
-
-    // color.RGBA[0] = (unsigned char)(255 - num);
-    // color.RGBA[1] = (unsigned char)((num % 2) * 64);
-    // color.RGBA[2] = (unsigned char)(num);
-    // color.RGBA[3] = 0xCF;
+    color.RGBA[0] = color_byte;
+    color.RGBA[1] = color_byte;
+    color.RGBA[2] = 255;
+    color.RGBA[3] = color_byte;
 
     return color.number;
 }
