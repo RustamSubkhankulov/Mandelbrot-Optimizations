@@ -239,34 +239,33 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
                 __m256 _xy = _mm256_mul_ps(_x, _y);
                 _x = _mm256_add_ps(_mm256_sub_ps(_x2, _y2), _x0);
                 _y = _mm256_add_ps(_mm256_add_ps(_xy, _xy), _y0);
-            }
+            }                                                   // next code is setting up colors for each pixel
 
             alignas(32) int   numbers  [8] = { 0 };
             alignas(32) float numbers_f[8] = { 0 }; 
             _mm256_storeu_si256((__m256i*)numbers, _num);
 
-            ARR_INT8_TO_FLOAT8(numbers, numbers_f);
-
+            ARR_INT8_TO_FLOAT8(numbers, numbers_f);             // convert vector of int values
+                                                                // into vector of floats
             __m256 _num_f = _mm256_load_ps(numbers_f);
             __m256 _255_f = _mm256_set1_ps(255.f);
-                   _num_f = _mm256_div_ps (_num_f, _255_f);
-
-            __m256 _pi_f  = _mm256_set1_ps(3.141592f);
+                   _num_f = _mm256_div_ps (_num_f, _255_f);    
+                                                        
+            __m256 _pi_f  = _mm256_set1_ps(3.141592f);          // perform some arithmetics
                   _num_f  = _mm256_mul_ps(_num_f, _pi_f);
 
             float color_values_float[8] = { 0 };
-            int   color_values_int[8]   = { 0 };
+            int   color_values_int[8]   = { 0 };               
 
-            _mm256_store_ps(color_values_float, _num_f);
+            _mm256_store_ps(color_values_float, _num_f);        // store vector of float values
 
-            ARR_FLOAT8_SIN(color_values_float);
-            ARR_FLOAT8_MUL_NUM(color_values_float, 255.f);
+            ARR_FLOAT8_SIN(color_values_float);                 // calculate sine from each value
+            ARR_FLOAT8_MUL_NUM(color_values_float, 255.f);      // multiply each by 255
             ARR_FLOAT8_TO_INT8(color_values_float, color_values_int);
-
+                                                                // convert to array of ints and store in vector
             __m256i _colors_int = _mm256_load_si256((__m256i*)color_values_int);
             
-            __m256i _255_int    = _mm256_set1_epi32(255);  
-            __m256i _256q_int   = _mm256_set1_epi32(256*256);
+            __m256i _255_int    = _mm256_set1_epi32(255);    
 
             __m256i _temp_eval  = _mm256_add_epi32(_mm256_slli_epi32(_colors_int, 8), _255_int);
             __m256i _colors     = _mm256_add_epi32(_mm256_slli_epi32(_temp_eval, 16), _colors_int);
@@ -276,6 +275,7 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
             int offset = x_ct + y_ct * X_SIZE;
             _mm256_storeu_si256((__m256i*)(&mandel_struct->data[offset]), _colors);
+                                                                // store calculated colors in data array
         }
     }
     
