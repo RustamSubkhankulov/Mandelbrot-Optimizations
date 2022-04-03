@@ -281,10 +281,13 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
             __m256i _colors_int = _mm256_load_si256((__m256i*)color_values_int);
             __m256i _256_int    = _mm256_set1_epi32(256);
             __m256i _255_int    = _mm256_set1_epi32(255);  
+            __m256i _256q_int   = _mm256_set1_epi32(256*256);
 
             __m256i _temp_eval  = _mm256_add_epi32(_mm256_mul_epi32(_256_int, _colors_int), _255_int);
+            __m256i _colors     = _mm256_add_epi32(_mm256_mul_epi32(_256q_int, _temp_eval), _colors_int);
 
-            __m256i _colors     = _mm256_add_epi32(_mm256_mul_epi32(_255_int, _temp_eval), _temp_eval);
+            __m256i _colors256  = _mm256_mul_epi32(_256_int, _colors_int);
+            _colors             = _mm256_add_epi32(_colors, _colors256);
 
             alignas(32) int colors[8] = { 0 };
             _mm256_maskstore_epi32(colors, _mm256_set1_epi8(0xFF), _colors);
