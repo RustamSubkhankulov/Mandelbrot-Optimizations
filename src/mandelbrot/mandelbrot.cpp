@@ -4,15 +4,6 @@
 
 //===============================================
 
-enum Modes _parse_cmndln(int argc, char* argv[] FOR_LOGS(, LOG_PARAMS))
-{
-    mndlbrt_log_report();
-
-    return CALC_AND_SHOW;
-}
-
-//-----------------------------------------------
-
 int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 {
     mndlbrt_log_report();
@@ -28,7 +19,7 @@ int _mandel_struct_init(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
+int _mandelbrot_exec(FOR_LOGS(LOG_PARAMS))
 {
     mndlbrt_log_report();
 
@@ -130,11 +121,9 @@ int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS))
                 return -1;
             }
 
-            if (mode != ONLY_CALC)
-            {
-                mandel_texture.update((sf::Uint8*) mandel_struct.data, X_SIZE, Y_SIZE, 0, 0);
-                window.draw(sprite);
-            }
+            mandel_texture.update((sf::Uint8*) mandel_struct.data, X_SIZE, Y_SIZE, 0, 0);
+            window.draw(sprite);
+        
         }
 
         if (write_fps(&window, &fps_clock, &fps_text, &fps_ct) == -1)
@@ -254,84 +243,41 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
 
             alignas(32) int   numbers  [8] = { 0 };
             alignas(32) float numbers_f[8] = { 0 }; 
-            _mm256_maskstore_epi32(numbers, _mm256_set1_epi8(0xFF), _num);
+            _mm256_storeu_si256((__m256i*)numbers, _num);
 
             ARR_INT8_TO_FLOAT8(numbers, numbers_f);
 
             __m256 _num_f = _mm256_load_ps(numbers_f);
-            __m256 _256_f = _mm256_set1_ps(256.f);
-                   _num_f = _mm256_div_ps (_num_f, _256_f);
+            __m256 _255_f = _mm256_set1_ps(255.f);
+                   _num_f = _mm256_div_ps (_num_f, _255_f);
 
             __m256 _pi_f  = _mm256_set1_ps(3.141592f);
                   _num_f  = _mm256_mul_ps(_num_f, _pi_f);
 
-            //_num_f = _ZGVdN8v_sinf(_num_f);
-            //_num_f = _mm256_sin_ps(_num_f);
-            //_num_f = _mm256_mul_ps(_num_f, _256_f);
-
             float color_values_float[8] = { 0 };
             int   color_values_int[8]   = { 0 };
 
-            _mm256_maskstore_ps(color_values_float, _mm256_set1_epi8(0xFF), _num_f);
+            _mm256_store_ps(color_values_float, _num_f);
 
             ARR_FLOAT8_SIN(color_values_float);
             ARR_FLOAT8_MUL_NUM(color_values_float, 255.f);
             ARR_FLOAT8_TO_INT8(color_values_float, color_values_int);
 
             __m256i _colors_int = _mm256_load_si256((__m256i*)color_values_int);
-            __m256i _256_int    = _mm256_set1_epi32(256);
+            
             __m256i _255_int    = _mm256_set1_epi32(255);  
             __m256i _256q_int   = _mm256_set1_epi32(256*256);
 
-            __m256i _temp_eval  = _mm256_add_epi32(_mm256_mul_epi32(_256_int, _colors_int), _255_int);
-            __m256i _colors     = _mm256_add_epi32(_mm256_mul_epi32(_256q_int, _temp_eval), _colors_int);
+            __m256i _temp_eval  = _mm256_add_epi32(_mm256_slli_epi32(_colors_int, 8), _255_int);
+            __m256i _colors     = _mm256_add_epi32(_mm256_slli_epi32(_temp_eval, 16), _colors_int);
 
-            __m256i _colors256  = _mm256_mul_epi32(_256_int, _colors_int);
+            __m256i _colors256  = _mm256_slli_epi32(_colors_int, 8);
             _colors             = _mm256_add_epi32(_colors, _colors256);
 
-            alignas(32) int colors[8] = { 0 };
-            _mm256_maskstore_epi32(colors, _mm256_set1_epi8(0xFF), _colors);
-
             int offset = x_ct + y_ct * X_SIZE;
-
-            mandel_struct->data[offset + 0] = colors[0];
-            mandel_struct->data[offset + 1] = colors[1];
-            mandel_struct->data[offset + 2] = colors[2];
-            mandel_struct->data[offset + 3] = colors[3];
-            mandel_struct->data[offset + 4] = colors[4];
-            mandel_struct->data[offset + 5] = colors[5];
-            mandel_struct->data[offset + 6] = colors[6];
-            mandel_struct->data[offset + 7] = colors[7];
+            _mm256_storeu_si256((__m256i*)(&mandel_struct->data[offset]), _colors);
         }
     }
     
     return 0;
 }
-
-//-----------------------------------------------
-
-uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS))
-{ 
-    mndlbrt_log_report(); 
- 
-    Color color = { 0 }; 
- 
-    float num_f = (float)num; 
- 
-    if (num >= Check_num) 
-        return 0xFFFFFFFF; 
- 
-    unsigned char color_byte  = (unsigned char) (sin (num_f / 256 * 3.14) * 255);
-  
-    color.RGBA[0] = color_byte; 
-    color.RGBA[1] = color_byte; 
-    color.RGBA[2] = 255; 
-    color.RGBA[3] = color_byte; 
-  
-    // color.RGBA[0] = num_f; 
-    // color.RGBA[1] = num_f; 
-    // color.RGBA[2] = 255; 
-    // color.RGBA[3] = num_f; 
- 
-    return color.number; 
-} 

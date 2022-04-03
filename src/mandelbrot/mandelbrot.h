@@ -39,24 +39,6 @@ struct Mandel_struct
 
 //===============================================
 
-enum Modes
-{
-
-    ONLY_CALC = 100,
-    CALC_AND_SHOW = 200
-
-};
-
-//===============================================
-
-union Color
-{
-    unsigned char RGBA[4];
-    uint32_t number;
-};
-
-//===============================================
-
 #define ARR_INT8_TO_FLOAT8(arr_int, arr_float)      \
                                                     \
     do                                              \
@@ -124,12 +106,7 @@ do                                                  \
 } while(0); 
 //===============================================
 
-//extern __m256  _ZGVdN8v_sinf(__m256 x); 
-//extern __m256 _mm256_sin_ps(__m256 v1);
-
-enum Modes _parse_cmndln(int argc, char* argv[] FOR_LOGS(, LOG_PARAMS));
-
-int _mandelbrot_exec(enum Modes mode FOR_LOGS(, LOG_PARAMS));
+int _mandelbrot_exec(FOR_LOGS(LOG_PARAMS));
 
 int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS));
 
@@ -155,15 +132,10 @@ uint32_t _get_color(int num FOR_LOGS(, LOG_PARAMS));
 #define mandel_struct_init(mandel_struct) \
        _mandel_struct_init(mandel_struct FOR_LOGS(, LOG_ARGS))
 
-#define parse_cmndln(argc, argv) \
-       _parse_cmndln(argc, argv FOR_LOGS(, LOG_ARGS))
-
-#define mandelbrot_exec(mode) \
-       _mandelbrot_exec(mode FOR_LOGS(, LOG_ARGS))
+#define mandelbrot_exec() \
+       _mandelbrot_exec(FOR_LOGS(LOG_ARGS))
 
 #define mandelbrot_eval(mandel_struct) \
        _mandelbrot_eval(mandel_struct FOR_LOGS(, LOG_ARGS))
 
-// #define mandelbrot_show() \
-//        _mandelbrot_show(FOR_LOGS(LOG_ARGS))
     
