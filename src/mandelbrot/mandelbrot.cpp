@@ -270,12 +270,12 @@ int _mandelbrot_eval(Mandel_struct* mandel_struct FOR_LOGS(, LOG_PARAMS))
             //_num_f = _mm256_mul_ps(_num_f, _256_f);
 
             float color_values_float[8] = { 0 };
-            int color_values_int[8] = { 0 };
+            int   color_values_int[8]   = { 0 };
 
             _mm256_maskstore_ps(color_values_float, _mm256_set1_epi8(0xFF), _num_f);
 
             ARR_FLOAT8_SIN(color_values_float);
-            ARR_FLOAT8_MUL_NUM(color_values_float, 256.f);
+            ARR_FLOAT8_MUL_NUM(color_values_float, 255.f);
             ARR_FLOAT8_TO_INT8(color_values_float, color_values_int);
 
             __m256i _colors_int = _mm256_load_si256((__m256i*)color_values_int);
