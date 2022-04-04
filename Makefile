@@ -11,7 +11,7 @@ obj/mndlbrt.o: src/mndlbrt.cpp src/global_conf.h
 	$(CC) src/mndlbrt.cpp -c -o obj/mndlbrt.o 
 
 obj/mandelbrot.o: src/global_conf.h src/mandelbrot/mandelbrot.cpp src/mandelbrot/mandelbrot.h src/mandelbrot/mandelbrot_conf.h
-	$(CC) src/mandelbrot/mandelbrot.cpp -c -o obj/mandelbrot.o -O3 -mavx -mavx2 -msse4 -lm
+	$(CC) src/mandelbrot/mandelbrot.cpp -c -o obj/mandelbrot.o -Ofast -mavx -mavx2 -msse4 -lm
 
 obj/logs.o: src/global_conf.h src/logs/errors_and_logs.cpp src/logs/errors_and_logs.h src/logs/errors.h src/logs/log_definitions.h src/include/errors.txt
 	$(CC) src/logs/errors_and_logs.cpp -c -o obj/logs.o 
