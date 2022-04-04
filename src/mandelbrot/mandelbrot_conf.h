@@ -10,6 +10,8 @@
 
 #endif 
 
+#define NO_DRAWING
+
 //===============================================
 
 static const int Init_x_size = 768;

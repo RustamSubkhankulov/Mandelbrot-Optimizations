@@ -29,9 +29,6 @@ int _mandelbrot_exec(FOR_LOGS(LOG_PARAMS))
 {
     mndlbrt_log_report();
 
-    char no_evaluation_flag = 0;
-    char no_evaluation_opt  = 0;
-
     Mandel_struct mandel_struct = { 0 };
     mandel_struct_init(&mandel_struct);
 
@@ -48,6 +45,8 @@ int _mandelbrot_exec(FOR_LOGS(LOG_PARAMS))
 
     size_t fps_ct = 0;
     sf::Clock fps_clock;
+
+    sf::Clock eval_clock;
 
     sf::Font fps_font;
     sf::Text fps_text;
@@ -66,78 +65,69 @@ int _mandelbrot_exec(FOR_LOGS(LOG_PARAMS))
 
             if (event.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::O)
+                if (event.key.code == sf::Keyboard::PageDown)
                 {
                     mandel_struct.scale_factor += Scale_step * mandel_struct.scale_factor;
-                    no_evaluation_flag = 0;
                 }
 
-                else if (event.key.code == sf::Keyboard::P)
+                else if (event.key.code == sf::Keyboard::PageUp)
                 { 
                     mandel_struct.scale_factor -= Scale_step * mandel_struct.scale_factor;
-                    no_evaluation_flag = 0;
-                }
-
-                else if (event.key.code == sf::Keyboard::Up)
-                {
-                    mandel_struct.y_shift += Y_shift_step * mandel_struct.scale_factor;
-
-                    no_evaluation_flag = 0;
                 }
 
                 else if (event.key.code == sf::Keyboard::Down)
                 {
-                    mandel_struct.y_shift -= Y_shift_step * mandel_struct.scale_factor;
-                    no_evaluation_flag = 0;
+                    mandel_struct.y_shift += Y_shift_step * mandel_struct.scale_factor;
                 }
 
-                else if (event.key.code == sf::Keyboard::Right)
+                else if (event.key.code == sf::Keyboard::Up)
                 {
-                    mandel_struct.x_shift -= X_shift_step * mandel_struct.scale_factor;
-                    no_evaluation_flag = 0;
+                    mandel_struct.y_shift -= Y_shift_step * mandel_struct.scale_factor;
                 }
 
                 else if (event.key.code == sf::Keyboard::Left)
                 {
-                    mandel_struct.x_shift += X_shift_step * mandel_struct.scale_factor;
-                    no_evaluation_flag = 0;
+                    mandel_struct.x_shift -= X_shift_step * mandel_struct.scale_factor;
                 }
 
-                else if (event.key.code == sf::Keyboard::LAlt)
+                else if (event.key.code == sf::Keyboard::Right)
                 {
-                    if (!no_evaluation_opt)
-                        no_evaluation_opt = 1;
-                    else
-                        no_evaluation_opt = 0;
+                    mandel_struct.x_shift += X_shift_step * mandel_struct.scale_factor;
                 }
             }
         }
 
-        window.clear();
+        #ifndef NO_DRAWING
 
-        if (no_evaluation_opt && no_evaluation_flag)
-        {
+            window.clear();
             window.draw(sprite);
+
+        #endif 
+
+        int return_value = mandelbrot_eval(&mandel_struct);
+        if (return_value == -1)
+        {
+            error_report(MANDEL_EVAL_ERR);
+            return -1;
         }
 
-        else
-        {
-            if (mandelbrot_eval(&mandel_struct) == -1)
-            {
-                error_report(MANDEL_EVAL_ERR);
-                return -1;
-            }
+        #ifndef NO_DRAWING
 
             mandel_texture.update((sf::Uint8*) mandel_struct.data, X_SIZE, Y_SIZE, 0, 0);
             window.draw(sprite);
-            
-        }
 
-        if (write_fps(&window, &fps_clock, &fps_text, &fps_ct) == -1)
+        #endif 
+            
+        return_value = write_fps(&window, &fps_clock, &fps_text, &fps_ct);
+        if (return_value == -1)
             return -1;
 
-        window.display();
-        no_evaluation_flag = 1;
+        #ifndef NO_DRAWING
+
+            window.display();
+
+        #endif 
+
     }
 
     delete[] mandel_struct.data;
@@ -185,11 +175,19 @@ int _write_fps(sf::RenderWindow* window, sf::Clock* fps_clock, sf::Text* text, s
         *fps_ct = 0;
     }
 
-    char fps_buf[Fps_buf_size] = { 0 };
-    sprintf(fps_buf, "%04.2f", fps);
+    #ifndef NO_DRAWING
 
-    (*text).setString(fps_buf);
-    (*window).draw(*text);
+        char fps_buf[Fps_buf_size] = { 0 };
+        sprintf(fps_buf, "%04.2f", fps);
+
+        (*text).setString(fps_buf);
+        (*window).draw(*text);
+
+    #else 
+
+        printf("\n FPS: %04.2f \n", fps);
+
+    #endif 
 
     return 0;
 }
