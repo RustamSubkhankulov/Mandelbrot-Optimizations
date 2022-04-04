@@ -29,9 +29,6 @@ struct Mandel_struct
     double x_shift;
     double y_shift;
 
-    //int x_size;
-    //int y_size;
-
     sf::Uint32* data;
 
     double scale_factor;
