@@ -60,14 +60,14 @@ struct Mandel_struct
                                                     \
     do                                              \
     {                                               \
-        arr_int[0] = (unsigned char)arr_float[0];             \
-        arr_int[1] = (unsigned char)arr_float[1];             \
-        arr_int[2] = (unsigned char)arr_float[2];             \
-        arr_int[3] = (unsigned char)arr_float[3];             \
-        arr_int[4] = (unsigned char)arr_float[4];             \
-        arr_int[5] = (unsigned char)arr_float[5];             \
-        arr_int[6] = (unsigned char)arr_float[6];             \
-        arr_int[7] = (unsigned char)arr_float[7];             \
+        arr_int[0] = (int)arr_float[0];             \
+        arr_int[1] = (int)arr_float[1];             \
+        arr_int[2] = (int)arr_float[2];             \
+        arr_int[3] = (int)arr_float[3];             \
+        arr_int[4] = (int)arr_float[4];             \
+        arr_int[5] = (int)arr_float[5];             \
+        arr_int[6] = (int)arr_float[6];             \
+        arr_int[7] = (int)arr_float[7];             \
                                                     \
     } while(0);
 
