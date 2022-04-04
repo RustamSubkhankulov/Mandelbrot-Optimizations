@@ -7,6 +7,8 @@
 #include <math.h>
 #include <immintrin.h>
 
+//===============================================
+
 #include "../logs/errors_and_logs.h"
 #include "mandelbrot_conf.h"
 
