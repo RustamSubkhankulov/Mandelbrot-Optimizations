@@ -10,7 +10,7 @@
 
 #endif 
 
-//#define NO_DRAWING
+#define NO_DRAWING
 
 //===============================================
 
