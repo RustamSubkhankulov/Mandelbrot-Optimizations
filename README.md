@@ -20,7 +20,7 @@ Next step we will compare FPS of two versions
 
 Comparing
 ---------
-Version | No optimizations | AVX optimizations with float 
---- | --- 
-FPS | 301 | 283 
+Version | No optimizations | AVX optimizations with float |
+--- | --- |
+FPS | 301 | 283 | 
 
