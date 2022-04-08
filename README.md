@@ -30,9 +30,10 @@ One can use controls to move picture of Mandelbrot set and enjoy its beauty
 
 Comparing
 ---------
-
-| no optimization  | 8.1  FPS       | 
-| AVX with floats  | 50.8 FPS       |
+| Version          | FPS      |
+| ---------------- | -------- |
+| no optimization  | 8.1  FPS | 
+| AVX with floats  | 50.8 FPS |
 
 Conclusion
 ----------
