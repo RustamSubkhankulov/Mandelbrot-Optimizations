@@ -10,6 +10,8 @@ This repository includes two branches both containing differrent versions of pro
 Note: in 'double' branch there is a uncompleted version of the same program, but with using 'double' type for calculating Mandelbrot set
 In 'main' version floats are used
 
+Note: 'noopt' version compiles with optimizations flar -O2, as version with optimization for fair compare
+
 Features
 --------
 src/mandelbrot/mandelbrot_conf.h contains configuration definition:
@@ -20,7 +22,8 @@ Next step we will compare FPS of two versions
 
 Comparing
 ---------
-Version | No optimizations | AVX optimizations with float |
---- | --- |
-FPS | 301 | 283 | 
+| Optimization \ Mode:  |  Drawing  |  No drawing    |
+| :--------------: | :---:          | :---:          |
+| no optimization  | 8.1  FPS       | 8.20  FPS      |
+| AVX with floats  | 50.8 FPS       | 51.8 FPS       |
 
