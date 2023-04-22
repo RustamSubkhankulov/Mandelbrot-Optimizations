@@ -1,6 +1,8 @@
 Using AVX intrinsics functions to optimize calculating of Mandelbrot set
 ========================================================================
 
+![pic](https://github.com/RustamSubkhankulov/Mandelbrot-Optimizations/blob/main/img/mndlbrt.jpg)
+
 Testing two versions
 --------------------
 This repository includes two branches both containing differrent versions of program, that calculates Mandelbrot and shows it using SFML.
